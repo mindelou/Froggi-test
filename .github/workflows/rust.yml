@@ -1,8 +1,9 @@
-name: Build Latest Release
+name: Build Froggi (macOS)
 
 on:
   push:
-    branches: [master, main]
+    branches:
+      - dev
   workflow_dispatch:
 
 jobs:
@@ -12,15 +13,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-
-    - name: Fetch latest release
-      run: |
-        LATEST_RELEASE=$(curl -s https://api.github.com/repos/<OWNER>/<REPO>/releases/latest | jq -r '.tarball_url')
-        echo "Latest release URL: $LATEST_RELEASE"
-        curl -L $LATEST_RELEASE -o latest-release.tar.gz
-        mkdir release-source
-        tar -xzf latest-release.tar.gz -C release-source --strip-components=1
-        cd release-source
+      with:
+        ref: dev  # Checkout the dev branch
 
     - name: Install Rust
       uses: actions-rs/toolchain@v1
@@ -33,19 +27,17 @@ jobs:
           echo "Xcode command line tools are already installed"
         fi
 
-    - name: Build the project
+    - name: Build Froggi
       run: |
-        cd release-source
         cargo build --release
 
     - name: Archive compiled binary
       run: |
-        cd release-source
         mkdir -p build
-        mv target/release/<your-binary-name> build/
+        mv target/release/froggi build/
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: macos-build
-        path: release-source/build/
+        name: froggi-macos-build
+        path: build/
