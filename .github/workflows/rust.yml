@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     runs-on: macos-latest
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -25,7 +25,7 @@ jobs:
       run: |
         LATEST_RELEASE=$(curl -s https://api.github.com/repos/AllLiver/Froggi/releases/latest | jq -r '.tarball_url')
         echo "Latest release URL: $LATEST_RELEASE"
-        
+
     - name: Build Froggi
       run: |
         cargo build --release
